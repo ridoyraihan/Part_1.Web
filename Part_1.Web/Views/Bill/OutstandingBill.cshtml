@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Part_1.Model.Bill>
+
+@{
+    ViewBag.Title = "OutstandingBill";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Outstanding Bills</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Index")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CustomerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BillDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BillAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PaidAmount)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.PaidDate)
+        </th>*@
+        <th>Action</th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CustomerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BillDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BillAmount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PaidAmount)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.PaidDate)
+        </td>*@
+        <td>
+            @Html.ActionLink("Partial Pay", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Mark As Paid", "MarkAsPaid", new { id=item.Id }) 
+        </td>
+    </tr>
+}
+
+</table>

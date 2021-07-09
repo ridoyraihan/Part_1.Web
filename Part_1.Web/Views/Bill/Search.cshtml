@@ -1,0 +1,68 @@
+﻿@model Part_1.Model.SearchModel
+@using Part_1.Model;
+
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <h2>Search Possible Payors</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.AmountToMatch, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.AmountToMatch, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AmountToMatch, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Search" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+@if (ViewBag.Customers != null)
+{
+    <br /><br />
+    <h4>Matched customer with given outstanding amount</h4>
+    <table class="table">
+        <tr>
+            <th>
+                Customer Name
+            </th>
+        </tr>
+
+        @foreach (Customer item in ViewBag.Customers)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+else
+{
+    @ViewBag.Message;
+}
+
+<div>
+    @Html.ActionLink("Back to List", "AllBill")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
