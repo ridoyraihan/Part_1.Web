@@ -12,9 +12,10 @@ namespace Part_1.Repo
     {
         BillItem billItem;
         BillList billList;
+        CustomerRepo _customerRepo;
         public BillRepo()
         {
-
+            _customerRepo = new CustomerRepo();
         }
 
         public List<Bill> GetBillListByAll()
@@ -24,30 +25,18 @@ namespace Part_1.Repo
             billList = new BillList();
             billList.Load(BillList.LoadOption.LoadAll);
 
+            List<Customer> customers = _customerRepo.GetCustomerListByAll();
+
             foreach (BillItem item in billList)
             {
-                Bill bill = this.MapBillItemToBill(item);
+                Bill bill = this.MapBillItemToBill(item, customers);
                 bList.Add(bill);
             }
 
             return bList;
         }
 
-        public List<Customer> GetCustomers()
-        {
-            List<Customer> customers = new List<Customer>()
-            {
-                new Customer() { Id = 1, Name = "Raihan Riody" },
-                new Customer() { Id = 2, Name = "Mukhlaser Rahman"},
-                new Customer() { Id = 3, Name = "Mr. Bakri Badawi"},
-                new Customer() { Id = 4, Name = "Laxus Chin"},
-                new Customer() { Id = 5, Name = "Forest Interactive"}
-            };
-
-            return customers;
-        }
-
-        private Bill MapBillItemToBill(BillItem item)
+        private Bill MapBillItemToBill(BillItem item, List<Customer> customers)
         {
             Bill bill = new Bill();
 
@@ -58,7 +47,7 @@ namespace Part_1.Repo
             bill.PaidAmount = item.PaidAmount;
             bill.PaidDate = item.PaidDate;
 
-            Customer customer = this.GetCustomers().FirstOrDefault(c => c.Id == bill.CustomerId);
+            Customer customer = customers.FirstOrDefault(c => c.Id == bill.CustomerId);
 
             bill.CustomerName = customer.Name;
 
@@ -73,7 +62,9 @@ namespace Part_1.Repo
             billItem.Id = billId;
             billItem.Load(BillItem.LoadOption.LoadById);
 
-            bill = this.MapBillItemToBill(billItem);
+            List<Customer> customers = _customerRepo.GetCustomerListByAll();
+
+            bill = this.MapBillItemToBill(billItem, customers);
 
             return bill;
         }
@@ -85,9 +76,11 @@ namespace Part_1.Repo
             billList = new BillList();
             billList.Load(BillList.LoadOption.LoadByOutstandingBill);
 
+            List<Customer> customers = _customerRepo.GetCustomerListByAll();
+
             foreach (BillItem item in billList)
             {
-                Bill bill = this.MapBillItemToBill(item);
+                Bill bill = this.MapBillItemToBill(item, customers);
                 bList.Add(bill);
             }
 
@@ -112,6 +105,8 @@ namespace Part_1.Repo
 
             if (bill.Id == 0)
             {
+                // When the id is -1 there will be an insert operation in Database
+                // Otherwise it will execute update statements
                 billItem.Id = -1;
             }
 
@@ -133,35 +128,6 @@ namespace Part_1.Repo
             billItem.PaidDate = bill.PaidDate;
 
             return billItem;
-        }
-
-        public List<Customer> GetCustomersWithOutstandingAmount(float amountToMatch)
-        {
-            List<Customer> possiblePayors = new List<Customer>();
-
-            List<Bill> outstandingBills = this.GetOutstandingBillListByAll();
-            IEnumerable<int> possiblePayorsId = this.GetPossibleCustomerIdsForOutstandingAmount(outstandingBills, amountToMatch);            
-
-            if (possiblePayorsId.ToList().Count > 0)
-            {
-                List<Customer> customers = this.GetCustomers();
-                foreach (int customerId in possiblePayorsId)
-                {
-                    Customer customer = new Customer();
-                    customer = customers.Find(c => c.Id == customerId);
-                    possiblePayors.Add(customer);
-                }
-            }
-
-            return possiblePayors;
-        }
-
-        private IEnumerable<int> GetPossibleCustomerIdsForOutstandingAmount(List<Bill> outstandingBills, float amountToMatch)
-        {
-            outstandingBills = outstandingBills.FindAll(bill => bill.BillAmount - bill.PaidAmount == amountToMatch);
-            IEnumerable<int> possiblePayorsId = outstandingBills.Select(bill => bill.CustomerId).Distinct();
-
-            return possiblePayorsId;
         }
     }
 }

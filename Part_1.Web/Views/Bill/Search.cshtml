@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <h2>Search Possible Payors</h2>
+<h2>Search Possible Payors</h2>
 
 
 @using (Html.BeginForm())
@@ -34,7 +34,8 @@
 
 @if (ViewBag.Customers != null)
 {
-    <br /><br />
+    <br />
+    <br />
     <h4>Matched customer with given outstanding amount</h4>
     <table class="table">
         <tr>
@@ -56,7 +57,11 @@
 }
 else
 {
-    @ViewBag.Message;
+    <div class="text-warning">
+        @ViewBag.Message
+    </div>
+    <br />
+
 }
 
 <div>

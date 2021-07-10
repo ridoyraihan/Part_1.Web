@@ -11,41 +11,42 @@ namespace Part_1.Web.Controllers
     public class BillController : Controller
     {
         private BillRepo _billRepo;
+        private CustomerRepo _customerRepo;
 
-        public BillController()
-        {            
-            _billRepo = new BillRepo();
-        }
         // GET: Bill
         public ActionResult Index()
         {
-            List<Customer> customers = _billRepo.GetCustomers();
-            ViewBag.Customers = customers;   
-            
+            _customerRepo = new CustomerRepo();
+            List<Customer> customers = _customerRepo.GetCustomerListByAll();
+
+            ViewBag.Customers = customers;
+
             return View();
         }
 
         [HttpPost]
         public ActionResult Index(Bill bill)
-        {            
-            ViewBag.Customers = _billRepo.GetCustomers();
+        {
+            _customerRepo = new CustomerRepo();
+            _billRepo = new BillRepo();
 
+            ViewBag.Customers = _customerRepo.GetCustomerListByAll();
             long id = _billRepo.SaveBill(bill);
-            if(id > 0)
-            {
-                return RedirectToAction("OutstandingBill");
-            }
 
-            return View();
+            if (id > 0) return RedirectToAction("OutstandingBill");
+
+            return View(bill);
         }
         public ActionResult OutstandingBill()
         {
+            _billRepo = new BillRepo();
             List<Bill> bills = _billRepo.GetOutstandingBillListByAll();
 
             return View(bills);
         }
         public ActionResult MarkAsPaid(int id)
         {
+            _billRepo = new BillRepo();
             long billId = _billRepo.MarkBillAsPaid(id);
 
             return RedirectToAction("OutstandingBill");
@@ -53,6 +54,7 @@ namespace Part_1.Web.Controllers
 
         public ActionResult AllBill()
         {
+            _billRepo = new BillRepo();
             List<Bill> bills = _billRepo.GetBillListByAll();
 
             return View(bills);
@@ -62,6 +64,7 @@ namespace Part_1.Web.Controllers
         {
             ViewBag.Message = "";
 
+            _billRepo = new BillRepo();
             Bill bill = _billRepo.GetBillById(id);
 
             return View(bill);
@@ -70,7 +73,7 @@ namespace Part_1.Web.Controllers
         [HttpPost]
         public ActionResult Edit(Bill bill)
         {
-            if(bill.BillAmount < (bill.PaidAmount + bill.Pay))
+            if (bill.BillAmount < (bill.PaidAmount + bill.Pay))
             {
                 ViewBag.Message = "Paid amount is more than bill amount.";
 
@@ -80,16 +83,20 @@ namespace Part_1.Web.Controllers
             {
                 ViewBag.Message = "";
 
+                _billRepo = new BillRepo();
+
+                float totalPaid = bill.PaidAmount + bill.Pay;
                 bill.PaidAmount = bill.Pay;
 
                 long id = _billRepo.SaveBill(bill);
                 if (id > 0)
                 {
-                    return RedirectToAction("OutstandingBill");
+                    if (totalPaid < bill.BillAmount) return RedirectToAction("OutstandingBill");
+                    return RedirectToAction("AllBill");
                 }
 
-                return View();
-            }            
+                return View(bill);
+            }
         }
 
         public ActionResult Search()
@@ -102,7 +109,8 @@ namespace Part_1.Web.Controllers
         [HttpPost]
         public ActionResult Search(float amountToMatch)
         {
-            List<Customer> customers = _billRepo.GetCustomersWithOutstandingAmount(amountToMatch);            
+            _customerRepo = new CustomerRepo();
+            List<Customer> customers = _customerRepo.GetCustomersWithOutstandingAmount(amountToMatch);
             if (customers.Count > 0)
             {
                 ViewBag.Customers = customers;

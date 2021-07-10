@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="PrimaryDalItem.cs" />
     <Compile Include="PrimaryDalList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
