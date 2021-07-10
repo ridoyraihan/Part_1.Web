@@ -20,6 +20,7 @@ namespace Part_1.Repo
         public List<Bill> GetBillListByAll()
         {
             List<Bill> bList = new List<Bill>();
+
             billList = new BillList();
             billList.Load(BillList.LoadOption.LoadAll);
 
@@ -28,6 +29,7 @@ namespace Part_1.Repo
                 Bill bill = this.MapBillItemToBill(item);
                 bList.Add(bill);
             }
+
             return bList;
         }
 
@@ -41,12 +43,14 @@ namespace Part_1.Repo
                 new Customer() { Id = 4, Name = "Laxus Chin"},
                 new Customer() { Id = 5, Name = "Forest Interactive"}
             };
+
             return customers;
         }
 
         private Bill MapBillItemToBill(BillItem item)
         {
             Bill bill = new Bill();
+
             bill.BillAmount = item.BillAmount;
             bill.BillDate = item.BillDate;
             bill.CustomerId = (int)item.CustomerId;
@@ -70,12 +74,14 @@ namespace Part_1.Repo
             billItem.Load(BillItem.LoadOption.LoadById);
 
             bill = this.MapBillItemToBill(billItem);
+
             return bill;
         }
 
         public List<Bill> GetOutstandingBillListByAll()
         {
             List<Bill> bList = new List<Bill>();
+
             billList = new BillList();
             billList.Load(BillList.LoadOption.LoadByOutstandingBill);
 
@@ -84,6 +90,7 @@ namespace Part_1.Repo
                 Bill bill = this.MapBillItemToBill(item);
                 bList.Add(bill);
             }
+
             return bList;
         }
 
@@ -92,7 +99,9 @@ namespace Part_1.Repo
             billItem = new BillItem();
             billItem.Id = id;
             billItem.Save(BillItem.SaveOption.MarkAsPaid);
+
             long billId = billItem.Id;
+
             return billId;
         }
 
@@ -100,18 +109,22 @@ namespace Part_1.Repo
         {
             billItem = new BillItem();
             billItem = this.MapBillToBillItem(bill);
+
             if (bill.Id == 0)
             {
                 billItem.Id = -1;
             }
+
             billItem.Save(BillItem.SaveOption.SaveRow);
             long id = billItem.Id;
+
             return id;
         }
 
         private BillItem MapBillToBillItem(Bill bill)
         {
             BillItem billItem = new BillItem();
+
             billItem.BillAmount = bill.BillAmount;
             billItem.BillDate = bill.BillDate;
             billItem.CustomerId = bill.CustomerId;
@@ -139,6 +152,7 @@ namespace Part_1.Repo
                     possiblePayors.Add(customer);
                 }
             }
+
             return possiblePayors;
         }
 
@@ -146,6 +160,7 @@ namespace Part_1.Repo
         {
             outstandingBills = outstandingBills.FindAll(bill => bill.BillAmount - bill.PaidAmount == amountToMatch);
             IEnumerable<int> possiblePayorsId = outstandingBills.Select(bill => bill.CustomerId).Distinct();
+
             return possiblePayorsId;
         }
     }

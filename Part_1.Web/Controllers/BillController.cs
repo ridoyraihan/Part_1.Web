@@ -20,48 +20,50 @@ namespace Part_1.Web.Controllers
         public ActionResult Index()
         {
             List<Customer> customers = _billRepo.GetCustomers();
-            ViewBag.Customers = customers;            
+            ViewBag.Customers = customers;   
+            
             return View();
         }
 
         [HttpPost]
         public ActionResult Index(Bill bill)
-        {
-            List<Customer> customers = new List<Customer>()
-            {
-                new Customer() { Id = 1, Name = "Raihan Riody" },
-                new Customer() { Id = 2, Name = "Mukhlaser Rahman"}
-            };
-            ViewBag.Customers = customers;
+        {            
+            ViewBag.Customers = _billRepo.GetCustomers();
+
             long id = _billRepo.SaveBill(bill);
             if(id > 0)
             {
                 return RedirectToAction("OutstandingBill");
             }
+
             return View();
         }
         public ActionResult OutstandingBill()
         {
             List<Bill> bills = _billRepo.GetOutstandingBillListByAll();
-            ViewBag.Bills = bills;
+
             return View(bills);
         }
         public ActionResult MarkAsPaid(int id)
         {
             long billId = _billRepo.MarkBillAsPaid(id);
+
             return RedirectToAction("OutstandingBill");
         }
 
         public ActionResult AllBill()
         {
             List<Bill> bills = _billRepo.GetBillListByAll();
+
             return View(bills);
         }
 
         public ActionResult Edit(int id)
         {
             ViewBag.Message = "";
+
             Bill bill = _billRepo.GetBillById(id);
+
             return View(bill);
         }
 
@@ -70,18 +72,22 @@ namespace Part_1.Web.Controllers
         {
             if(bill.BillAmount < (bill.PaidAmount + bill.Pay))
             {
-                ViewBag.Message = "Paid amount is more then bill amount.";
+                ViewBag.Message = "Paid amount is more than bill amount.";
+
                 return View(bill);
             }
             else
             {
                 ViewBag.Message = "";
+
                 bill.PaidAmount = bill.Pay;
+
                 long id = _billRepo.SaveBill(bill);
                 if (id > 0)
                 {
                     return RedirectToAction("OutstandingBill");
                 }
+
                 return View();
             }            
         }
@@ -89,6 +95,7 @@ namespace Part_1.Web.Controllers
         public ActionResult Search()
         {
             ViewBag.Message = "";
+
             return View();
         }
 
@@ -99,12 +106,14 @@ namespace Part_1.Web.Controllers
             if (customers.Count > 0)
             {
                 ViewBag.Customers = customers;
+
                 return View();
             }
             else
             {
                 ViewBag.Message = "No customer found having outstanding bill: " + amountToMatch;
             }
+
             return View();
         }
     }

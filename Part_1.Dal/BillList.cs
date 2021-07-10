@@ -108,6 +108,7 @@ namespace Part_1.Dal
             {
                 ar.Add(dr.GetName(i));
             }
+
             return ar;
         }
 

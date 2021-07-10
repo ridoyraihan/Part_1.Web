@@ -65,6 +65,7 @@ namespace Part_1.PrimaryDal
                 cnn.Close();
                 cmd.Dispose();
                 cmd = null;
+
                 return id;
             }
             catch (Exception ex)
